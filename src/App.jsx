@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   Menu,
   Send,
@@ -33,6 +33,9 @@ import {
   Save,
   Edit3,
   Image,
+  ChevronDown,
+  ChevronUp,
+  GripVertical,
 } from "lucide-react";
 
 const STYLES = `
@@ -486,6 +489,112 @@ textarea {
   border: 1px solid rgba(139, 62, 95, 0.18);
   padding: 5px 12px;
   border-radius: 999px;
+}
+.blocker-tag .tag-x {
+  display: grid;
+  place-items: center;
+  margin: 0 -5px 0 -1px;
+  padding: 2px;
+  line-height: 0;
+  color: var(--pink-ink);
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  opacity: 0.5;
+  transition: opacity 140ms ease, background 140ms ease;
+}
+.blocker-tag .tag-x:hover {
+  opacity: 1;
+  background: rgba(139, 62, 95, 0.14);
+}
+.add-blocker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--muted);
+  background: transparent;
+  border: 1px dashed var(--line);
+  padding: 5px 12px;
+  border-radius: 999px;
+  transition: color 140ms ease, background 140ms ease, border-color 140ms ease;
+}
+.add-blocker:hover {
+  color: var(--pink-ink);
+  background: var(--pink);
+  border-style: solid;
+  border-color: rgba(139, 62, 95, 0.18);
+}
+.blocker-input {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--pink-ink);
+  background: var(--pink);
+  border: 1px solid rgba(139, 62, 95, 0.18);
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+.blocker-input input {
+  width: 200px;
+  max-width: 46vw;
+  font-size: 12.5px;
+  color: var(--pink-ink);
+  background: transparent;
+  border: 0;
+  outline: none;
+}
+.blocker-input input::placeholder {
+  color: rgba(139, 62, 95, 0.5);
+}
+
+/* ---------- stage picker ---------- */
+.stage-select {
+  position: relative;
+  display: inline-block;
+}
+.stage-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 0;
+  border: 0;
+}
+.stage-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 190px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 6px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 14px 36px rgba(90, 44, 66, 0.2);
+  animation: modalIn 140ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+.stage-opt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px 6px;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  transition: background 140ms ease;
+}
+.stage-opt:hover {
+  background: var(--bg-soft);
+}
+.stage-opt .pill {
+  margin-top: 0;
 }
 
 .tabs {
@@ -1317,6 +1426,9 @@ textarea {
   .action-row,
   .inline-form,
   .add-btn,
+  .add-blocker,
+  .blocker-tag .tag-x,
+  .stage-menu,
   .link-btn,
   .icon-btn,
   .head-btn,
@@ -1754,6 +1866,55 @@ textarea {
 .template-row input:focus {
   border-color: var(--lilac);
 }
+.template-row.dragging {
+  opacity: 0.45;
+}
+.template-row.drop-target {
+  box-shadow: inset 0 2px 0 var(--lilac);
+}
+.drag-handle {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  padding: 4px 2px;
+  line-height: 0;
+  color: var(--faint);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: grab;
+  transition: color 140ms ease, background 140ms ease;
+}
+.drag-handle:hover {
+  color: var(--ink);
+  background: var(--bg-soft);
+}
+.drag-handle:active {
+  cursor: grabbing;
+}
+.row-action:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.row-action:disabled:hover {
+  background: transparent;
+  color: var(--muted);
+}
+.apply-note {
+  margin-top: 10px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--faint);
+  text-wrap: pretty;
+}
+.check-item.legacy {
+  border-style: dashed;
+  opacity: 0.72;
+}
+.legacy-chip {
+  background: var(--line-soft);
+  color: var(--faint);
+}
 
 `;
 
@@ -1797,8 +1958,10 @@ const KALY_NAV = [
   { id: "settings", label: "Settings", icon: Settings },
 ];
 
-// Canonical stage ladder. Badge colors run pink -> peach -> mint -> teal so the
-// color itself reads as progress; the sidebar ring uses the same hue.
+// Preset stage ladder. Badge colors run pink -> peach -> mint -> teal so the
+// color itself reads as progress; the sidebar ring uses the same hue. The live
+// list is whatever the user keeps in Settings — these supply the palette and
+// the descriptions for any name that survives from the presets.
 const STAGES = [
   {
     name: "Early Stage",
@@ -1858,6 +2021,8 @@ const STAGES = [
   },
 ];
 
+const DEFAULT_STAGE_NAMES = STAGES.map((s) => s.name);
+
 // Older KV records still carry the seed's stage words; map them on read so the
 // sidebar pill and the stage guide always agree.
 const STAGE_ALIASES = {
@@ -1865,6 +2030,20 @@ const STAGE_ALIASES = {
   Discovery: "Planning",
   Live: "Post-Launch",
 };
+
+// Turn the user's editable name list into full defs: a preset name keeps its
+// color and description, a custom one borrows the palette at its position.
+function buildStageDefs(names) {
+  const list = Array.isArray(names) && names.length ? names : DEFAULT_STAGE_NAMES;
+  return list.map((name, i) => {
+    const preset = STAGES.find((s) => s.name === name);
+    return preset || { ...STAGES[i % STAGES.length], name, desc: "" };
+  });
+}
+
+// The live stage list, so every badge in the tree reads the same one.
+const StagesCtx = createContext(STAGES);
+const useStageDefs = () => useContext(StagesCtx);
 
 const OWNER_TINT = {
   Kaly: { bg: "#F3E4F8", color: "#6B4C8A" },
@@ -1880,9 +2059,9 @@ const DOC_TINTS = [
   { bg: "#E8EFD9", color: "#4E6730" },
 ];
 
-const stageDef = (name) => {
+const stageDef = (name, defs = STAGES) => {
   const canonical = STAGE_ALIASES[name] || name;
-  return STAGES.find((s) => s.name === canonical) || STAGES[0];
+  return defs.find((s) => s.name === canonical) || defs[0];
 };
 
 const docTint = (doc) => {
@@ -1900,7 +2079,7 @@ const GoldStar = ({ size = 20 }) => (
 
 // Building tile tinted to the client's current stage.
 const ClientTile = ({ stage }) => {
-  const def = stageDef(stage);
+  const def = stageDef(stage, useStageDefs());
   return (
     <span className="doc-tile" style={{ background: def.bg, color: def.color }}>
       <Building2 size={16} />
@@ -1961,7 +2140,11 @@ export default function App() {
 
   const [clients, setClients] = useState([]);
   const [personal, setPersonal] = useState({ notes: "", noteEntries: [], docs: [], folders: [] });
-  const [settings, setSettings] = useState({ defaultChecklist: [], chatContext: true });
+  const [settings, setSettings] = useState({
+    defaultChecklist: [],
+    stages: DEFAULT_STAGE_NAMES,
+    chatContext: true,
+  });
   const [activeId, setActiveId] = useState(null);
   const [tab, setTab] = useState("checklist");
   const [view, setView] = useState("client"); // client | personal-notes | personal-docs | settings
@@ -1997,6 +2180,7 @@ export default function App() {
         });
         setSettings({
           defaultChecklist: sett.defaultChecklist || [],
+          stages: sett.stages?.length ? sett.stages : DEFAULT_STAGE_NAMES,
           chatContext: sett.chatContext !== false,
         });
         setLoading(false);
@@ -2008,6 +2192,7 @@ export default function App() {
   }, []);
 
   const active = clients.find((c) => c.id === activeId) || null;
+  const stageDefs = useMemo(() => buildStageDefs(settings.stages), [settings.stages]);
 
   async function saveClient(id, patch) {
     setClients((prev) => prev.map((c) => (c.id === id ? { ...c, ...patch } : c)));
@@ -2038,11 +2223,19 @@ export default function App() {
   async function saveSettings(patch) {
     setSettings((prev) => ({ ...prev, ...patch }));
     try {
-      await fetch(`${API}/api/settings`, {
+      const res = await fetch(`${API}/api/settings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(patch),
       });
+      const saved = await res.json();
+      if (saved?.defaultChecklist) setSettings((prev) => ({ ...prev, ...saved }));
+      // the template drives every client's checklist, so pull the roster back
+      // in to show the merge that just happened server-side
+      if (patch.defaultChecklist) {
+        const roster = await fetch(`${API}/api/clients`).then((r) => r.json());
+        if (Array.isArray(roster)) setClients(roster);
+      }
     } catch (e) {
       console.error("settings save failed", e);
     }
@@ -2133,6 +2326,7 @@ export default function App() {
   const minimized = docTabs.filter((t) => t.minimized);
 
   return (
+    <StagesCtx.Provider value={stageDefs}>
     <div className="app">
       <header className="topbar">
         <button
@@ -2223,30 +2417,15 @@ export default function App() {
                 <div className="pane-head">
                   <h1>{active.name}</h1>
                   <div className="sub">
-                    <span
-                      className="pill"
-                      style={{
-                        background: stageDef(active.stage).bg,
-                        color: stageDef(active.stage).color,
-                        marginTop: 0,
-                      }}
-                    >
-                      Stage · {stageDef(active.stage).name}
-                    </span>
+                    <StageSelect
+                      stage={active.stage}
+                      onPick={(stage) => saveClient(active.id, { stage })}
+                    />
                     {active.updatedAt && (
                       <span>Updated {new Date(active.updatedAt).toLocaleString()}</span>
                     )}
                   </div>
-                  {active.blockers?.length > 0 && (
-                    <div className="blockers">
-                      {active.blockers.map((b, i) => (
-                        <span className="blocker-tag" key={i}>
-                          <AlertCircle size={12} />
-                          {b}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                  <Blockers client={active} saveClient={saveClient} />
                 </div>
 
                 <nav className="tabs">
@@ -2335,6 +2514,128 @@ export default function App() {
         <button className="overlay" onClick={() => setSidebarOpen(false)} aria-label="Close" />
       )}
     </div>
+    </StagesCtx.Provider>
+  );
+}
+
+// The stage badge IS the picker: click it, choose a stage, it saves to KV.
+// Nothing derives the stage — this is the only thing that sets it.
+function StageSelect({ stage, onPick }) {
+  const defs = useStageDefs();
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const def = stageDef(stage, defs);
+
+  useEffect(() => {
+    if (!open) return;
+    const away = (e) => {
+      if (!ref.current?.contains(e.target)) setOpen(false);
+    };
+    const esc = (e) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("mousedown", away);
+    document.addEventListener("keydown", esc);
+    return () => {
+      document.removeEventListener("mousedown", away);
+      document.removeEventListener("keydown", esc);
+    };
+  }, [open]);
+
+  return (
+    <span className="stage-select" ref={ref}>
+      <button
+        className="pill stage-pill"
+        style={{ background: def.bg, color: def.color }}
+        onClick={() => setOpen((v) => !v)}
+        title="Change stage"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+      >
+        Stage · {def.name}
+        <ChevronDown size={12} />
+      </button>
+      {open && (
+        <div className="stage-menu" role="listbox">
+          {defs.map((s) => (
+            <button
+              key={s.name}
+              className="stage-opt"
+              role="option"
+              aria-selected={s.name === def.name}
+              onClick={() => {
+                onPick(s.name);
+                setOpen(false);
+              }}
+            >
+              <span className="pill" style={{ background: s.bg, color: s.color }}>
+                {s.name}
+              </span>
+              {s.name === def.name && <Check size={13} />}
+            </button>
+          ))}
+        </div>
+      )}
+    </span>
+  );
+}
+
+// Warning pills, all hand-entered. Add one with a short line of text; the ×
+// clears it once it's resolved. Nothing is seeded here.
+function Blockers({ client, saveClient }) {
+  const [adding, setAdding] = useState(false);
+  const [text, setText] = useState("");
+  const list = Array.isArray(client.blockers) ? client.blockers : [];
+
+  function commit() {
+    const t = text.trim();
+    if (t) saveClient(client.id, { blockers: [...list, t] });
+    setText("");
+    setAdding(false);
+  }
+  function remove(i) {
+    saveClient(client.id, { blockers: list.filter((_, j) => j !== i) });
+  }
+
+  return (
+    <div className="blockers">
+      {list.map((b, i) => (
+        <span className="blocker-tag" key={i}>
+          <AlertCircle size={12} />
+          {b}
+          <button
+            className="tag-x"
+            onClick={() => remove(i)}
+            title="Resolved — remove"
+            aria-label={`Remove blocker: ${b}`}
+          >
+            <X size={11} />
+          </button>
+        </span>
+      ))}
+      {adding ? (
+        <span className="blocker-input">
+          <AlertCircle size={12} />
+          <input
+            autoFocus
+            value={text}
+            placeholder="What's blocking?"
+            onChange={(e) => setText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") commit();
+              if (e.key === "Escape") {
+                setText("");
+                setAdding(false);
+              }
+            }}
+            onBlur={commit}
+          />
+        </span>
+      ) : (
+        <button className="add-blocker" onClick={() => setAdding(true)}>
+          <Plus size={12} />
+          Add blocker
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -2343,7 +2644,8 @@ function Sidebar({ clients, activeId, view, open, onPickClient, onPickKaly, onAd
   const [draftName, setDraftName] = useState("");
   const [adding, setAdding] = useState(false);
   const [newName, setNewName] = useState("");
-  const [newStage, setNewStage] = useState("Early Stage");
+  const stageDefs = useStageDefs();
+  const [newStage, setNewStage] = useState(stageDefs[0].name);
 
   function startRename(c) {
     setEditing(c.id);
@@ -2359,7 +2661,7 @@ function Sidebar({ clients, activeId, view, open, onPickClient, onPickKaly, onAd
     if (!n) return;
     onAddClient(n, newStage);
     setNewName("");
-    setNewStage("Early Stage");
+    setNewStage(stageDefs[0].name);
     setAdding(false);
   }
 
@@ -2390,7 +2692,7 @@ function Sidebar({ clients, activeId, view, open, onPickClient, onPickKaly, onAd
       <div className="client-list">
         <div className="list-head">Clients · {clients.length}</div>
         {clients.map((c) => {
-          const def = stageDef(c.stage);
+          const def = stageDef(c.stage, stageDefs);
           const isActive = view === "client" && c.id === activeId;
           const isEditing = editing === c.id;
           return (
@@ -2459,7 +2761,7 @@ function Sidebar({ clients, activeId, view, open, onPickClient, onPickKaly, onAd
               onKeyDown={(e) => e.key === "Enter" && submitNew()}
             />
             <select value={newStage} onChange={(e) => setNewStage(e.target.value)}>
-              {STAGES.map((s) => (
+              {stageDefs.map((s) => (
                 <option key={s.name} value={s.name}>
                   {s.name}
                 </option>
@@ -2486,11 +2788,12 @@ function Sidebar({ clients, activeId, view, open, onPickClient, onPickKaly, onAd
 }
 
 function PrintHead({ client }) {
+  const defs = useStageDefs();
   return (
     <div className="print-head">
       <h1>{client.name} — onboarding checklist</h1>
       <div className="sub">
-        Stage · {stageDef(client.stage).name} · printed{" "}
+        Stage · {stageDef(client.stage, defs).name} · printed{" "}
         {new Date().toLocaleDateString(undefined, {
           year: "numeric",
           month: "long",
@@ -2514,8 +2817,11 @@ function Checklist({ client, saveClient }) {
   const [draft, setDraft] = useState("");
   const [adding, setAdding] = useState(false);
   const list = client.checklist || [];
-  const doneCount = list.filter((i) => i.done).length;
-  const pct = list.length ? Math.round((doneCount / list.length) * 100) : 0;
+  // legacy items are history from a deleted template step — they stay visible
+  // but they don't move the bar or the denominator
+  const live = list.filter((i) => !i.legacy);
+  const doneCount = live.filter((i) => i.done).length;
+  const pct = live.length ? Math.round((doneCount / live.length) * 100) : 0;
 
   function toggle(itemId) {
     const next = list.map((it) => (it.id === itemId ? { ...it, done: !it.done } : it));
@@ -2525,8 +2831,10 @@ function Checklist({ client, saveClient }) {
   function add() {
     const text = draft.trim();
     if (!text) return;
+    // `custom` keeps it off the template: it lives on this client only and
+    // survives every template sync
     saveClient(client.id, {
-      checklist: [...list, { id: `c-${Date.now()}`, text, done: false }],
+      checklist: [...list, { id: `c-${Date.now()}`, text, done: false, custom: true }],
     });
     setDraft("");
     setAdding(false);
@@ -2539,7 +2847,7 @@ function Checklist({ client, saveClient }) {
           <span style={{ width: `${pct}%` }} />
         </div>
         <span className="count">
-          {doneCount} of {list.length} complete
+          {doneCount} of {live.length} complete
         </span>
         <button className="add-btn mint" onClick={() => setAdding((v) => !v)}>
           <Plus size={13} />
@@ -2564,7 +2872,12 @@ function Checklist({ client, saveClient }) {
 
       <div className="stack">
         {list.map((it) => (
-          <div key={it.id} className={`card check-item ${it.done ? "completed" : ""}`}>
+          <div
+            key={it.id}
+            className={`card check-item ${it.done ? "completed" : ""} ${
+              it.legacy ? "legacy" : ""
+            }`}
+          >
             <button
               className={`box ${it.done ? "done" : ""}`}
               onClick={() => toggle(it.id)}
@@ -2573,6 +2886,11 @@ function Checklist({ client, saveClient }) {
               {it.done && <Check size={13} />}
             </button>
             <span className="txt">{it.text}</span>
+            {it.legacy && (
+              <span className="owner legacy-chip" title="Removed from the template — kept because it was checked">
+                Legacy
+              </span>
+            )}
             {it.owner && (
               <span
                 className="owner"
@@ -3319,14 +3637,47 @@ function SettingsPane({ settings, saveSettings }) {
       : []
   );
   const [dirty, setDirty] = useState(false);
+  const [grab, setGrab] = useState(null); // row armed for dragging by its handle
+  const [dragIdx, setDragIdx] = useState(null);
+  const [overIdx, setOverIdx] = useState(null);
+  const [stages, setStages] = useState(settings.stages || DEFAULT_STAGE_NAMES);
+  const [stagesDirty, setStagesDirty] = useState(false);
 
   useEffect(() => {
     setItems(settings.defaultChecklist || []);
     setDirty(false);
   }, [settings.defaultChecklist]);
 
+  useEffect(() => {
+    setStages(settings.stages?.length ? settings.stages : DEFAULT_STAGE_NAMES);
+    setStagesDirty(false);
+  }, [settings.stages]);
+
+  function editStage(i, val) {
+    setStages((prev) => prev.map((t, j) => (j === i ? val : t)));
+    setStagesDirty(true);
+  }
+  function removeStage(i) {
+    setStages((prev) => prev.filter((_, j) => j !== i));
+    setStagesDirty(true);
+  }
+  function addStage() {
+    setStages((prev) => [...prev, ""]);
+    setStagesDirty(true);
+  }
+  function saveStages() {
+    const cleaned = stages.map((t) => t.trim()).filter(Boolean);
+    // an empty list would leave the badge with nothing to offer
+    const next = cleaned.length ? cleaned : DEFAULT_STAGE_NAMES;
+    saveSettings({ stages: next });
+    setStages(next);
+    setStagesDirty(false);
+  }
+
+  // Template rows are {id, text}. The id is what carries a client's tick
+  // across a rename or a reorder, so it is never regenerated here.
   function edit(i, val) {
-    setItems((prev) => prev.map((t, j) => (j === i ? val : t)));
+    setItems((prev) => prev.map((t, j) => (j === i ? { ...t, text: val } : t)));
     setDirty(true);
   }
   function removeAt(i) {
@@ -3334,11 +3685,23 @@ function SettingsPane({ settings, saveSettings }) {
     setDirty(true);
   }
   function addRow() {
-    setItems((prev) => [...prev, ""]);
+    setItems((prev) => [...prev, { id: newId("tpl"), text: "" }]);
+    setDirty(true);
+  }
+  function move(from, to) {
+    if (to < 0 || to >= items.length || from === to) return;
+    setItems((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
     setDirty(true);
   }
   function saveTemplate() {
-    const cleaned = items.map((t) => t.trim()).filter(Boolean);
+    const cleaned = items
+      .map((t) => ({ ...t, text: t.text.trim() }))
+      .filter((t) => t.text);
     saveSettings({ defaultChecklist: cleaned });
     setItems(cleaned);
     setDirty(false);
@@ -3361,14 +3724,106 @@ function SettingsPane({ settings, saveSettings }) {
       </section>
 
       <section className="card setting-card">
-        <h3>Default checklist template</h3>
+        <h3>Client stages</h3>
         <div className="desc">
-          Applied to every new client. Editing this doesn’t change existing clients.
+          The list the stage badge offers on each client. Stage is set by hand and is
+          independent of the checklist — nothing moves a client along for you. Renaming a stage
+          here doesn’t re-stage clients already sitting on the old name.
         </div>
-        {items.map((t, i) => (
+        {stages.map((t, i) => (
           <div className="template-row" key={i}>
             <span className="num">{i + 1}</span>
-            <input value={t} onChange={(e) => edit(i, e.target.value)} placeholder="Checklist step…" />
+            <input
+              value={t}
+              onChange={(e) => editStage(i, e.target.value)}
+              placeholder="Stage name…"
+            />
+            <button
+              className="row-action danger"
+              title="Remove"
+              onClick={() => removeStage(i)}
+            >
+              <Trash2 size={14} />
+            </button>
+          </div>
+        ))}
+        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+          <button className="add-btn pink" onClick={addStage}>
+            <Plus size={13} />
+            Add stage
+          </button>
+          <button className="btn" onClick={saveStages} disabled={!stagesDirty}>
+            <Save size={14} style={{ verticalAlign: "-2px", marginRight: 6 }} />
+            Save stages
+          </button>
+        </div>
+      </section>
+
+      <section className="card setting-card">
+        <h3>Default checklist template</h3>
+        <div className="desc">
+          The order and wording every client follows. Drag a row by its handle, or use the
+          arrows, to reorder.
+        </div>
+        {items.map((t, i) => (
+          <div
+            className={`template-row ${dragIdx === i ? "dragging" : ""} ${
+              overIdx === i && dragIdx !== i ? "drop-target" : ""
+            }`}
+            key={t.id}
+            draggable={grab === i}
+            onDragStart={() => setDragIdx(i)}
+            onDragEnd={() => {
+              setDragIdx(null);
+              setOverIdx(null);
+              setGrab(null);
+            }}
+            onDragOver={(e) => {
+              if (dragIdx === null) return;
+              e.preventDefault();
+              setOverIdx(i);
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              if (dragIdx !== null) move(dragIdx, i);
+              setDragIdx(null);
+              setOverIdx(null);
+              setGrab(null);
+            }}
+          >
+            <button
+              className="drag-handle"
+              title="Drag to reorder"
+              aria-label={`Drag to reorder ${t.text}`}
+              onMouseDown={() => setGrab(i)}
+              onMouseUp={() => setGrab(null)}
+            >
+              <GripVertical size={14} />
+            </button>
+            <span className="num">{i + 1}</span>
+            <input
+              value={t.text}
+              onChange={(e) => edit(i, e.target.value)}
+              placeholder="Checklist step…"
+            />
+            <button
+              className="row-action"
+              title="Move up"
+              aria-label={`Move ${t.text} up`}
+              disabled={i === 0}
+              onClick={() => move(i, i - 1)}
+            >
+              <ChevronUp size={14} />
+            </button>
+            <button
+              className="row-action"
+              title="Move down"
+              aria-label={`Move ${t.text} down`}
+              disabled={i === items.length - 1}
+              onClick={() => move(i, i + 1)}
+            >
+              <ChevronDown size={14} />
+            </button>
             <button className="row-action danger" title="Remove" onClick={() => removeAt(i)}>
               <Trash2 size={14} />
             </button>
@@ -3383,6 +3838,11 @@ function SettingsPane({ settings, saveSettings }) {
             <Save size={14} style={{ verticalAlign: "-2px", marginRight: 6 }} />
             Save template
           </button>
+        </div>
+        <div className="apply-note">
+          Applies to all clients. Order and wording sync everywhere; each client keeps its own
+          ticks. A step you delete stays on any client that already checked it, marked Legacy.
+          Items added on a client stay on that client.
         </div>
       </section>
     </div>
@@ -3480,21 +3940,24 @@ function DocPane({ doc, onMinimize, onClose }) {
 }
 
 function StageGuide({ clients, onClose }) {
+  const defs = useStageDefs();
   return (
     <div className="veil" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-head">
           <span style={{ flex: 1, minWidth: 0 }}>
             <h2>Client stage guide</h2>
-            <span className="sub">Stages in order. Badge colors match the sidebar pills.</span>
+            <span className="sub">
+              Stages in order, as set in Settings. Badge colors match the sidebar pills.
+            </span>
           </span>
           <button className="mini-btn" onClick={onClose} aria-label="Close">
             <X size={14} />
           </button>
         </div>
         <div className="modal-body">
-          {STAGES.map((s) => {
-            const n = clients.filter((c) => stageDef(c.stage).name === s.name).length;
+          {defs.map((s) => {
+            const n = clients.filter((c) => stageDef(c.stage, defs).name === s.name).length;
             return (
               <div className="stage-row" key={s.name}>
                 <span className="badge" style={{ background: s.bg, color: s.color }}>
@@ -3512,6 +3975,7 @@ function StageGuide({ clients, onClose }) {
 }
 
 function ChatPanel({ client, chatContext, onClose }) {
+  const stageDefs = useStageDefs();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -3534,7 +3998,7 @@ function ChatPanel({ client, chatContext, onClose }) {
       const ctx = chatContext && client
         ? {
             name: client.name,
-            stage: stageDef(client.stage).name,
+            stage: stageDef(client.stage, stageDefs).name,
             blockers: client.blockers,
             notes: client.notes,
           }
@@ -3605,7 +4069,7 @@ function ChatPanel({ client, chatContext, onClose }) {
             {!chatContext
               ? "Context off · generic assistant"
               : client
-              ? `Context: ${client.name} · ${stageDef(client.stage).name}`
+              ? `Context: ${client.name} · ${stageDef(client.stage, stageDefs).name}`
               : "No client"}
           </span>
         </span>

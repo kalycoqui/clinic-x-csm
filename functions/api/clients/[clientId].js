@@ -5,7 +5,14 @@
 // notes/meetings/documents/folders updates — all merged by stable id so a
 // rename never orphans data.
 import { json, preflight } from "../../_shared/cors.js";
-import { defaultClient, checklistTemplate } from "../../_shared/seed.js";
+import {
+  defaultClient,
+  checklistTemplate,
+  MANUAL_V,
+  migrateManualFields,
+  applyTemplate,
+  loadTemplate,
+} from "../../_shared/seed.js";
 
 export async function onRequestOptions() {
   return preflight();
@@ -22,6 +29,10 @@ export async function onRequestGet({ env, params }) {
   if (!Array.isArray(rec.checklist) || rec.checklist.length === 0) {
     rec.checklist = checklistTemplate();
   }
+  const dirty = [migrateManualFields(rec), applyTemplate(rec, await loadTemplate(kv))].some(
+    Boolean
+  );
+  if (dirty && kv) await kv.put(id, JSON.stringify(rec));
   return json(rec);
 }
 
@@ -40,7 +51,16 @@ export async function onRequestPost({ env, params, request }) {
   const current = (await kv.get(id, "json")) || defaultClient(id);
   if (!current) return json({ error: "unknown client" }, 404);
 
-  const merged = { ...current, ...patch, id, updatedAt: new Date().toISOString() };
+  // clear any still-seeded stage/blockers before the patch lands on top
+  migrateManualFields(current);
+
+  const merged = {
+    ...current,
+    ...patch,
+    id,
+    manualV: MANUAL_V,
+    updatedAt: new Date().toISOString(),
+  };
   await kv.put(id, JSON.stringify(merged));
   return json(merged);
 }

@@ -4,12 +4,16 @@ import { json, preflight } from "../../_shared/cors.js";
 import {
   ROSTER_KEY,
   CLIENT_ORDER,
+  INITIAL_STAGE,
+  MANUAL_V,
+  SYNC_V,
+  migrateManualFields,
   defaultClient,
   checklistTemplate,
-  checklistFromTexts,
+  checklistFromTemplate,
+  loadTemplate,
+  applyTemplate,
 } from "../../_shared/seed.js";
-
-const SETTINGS_KEY = "user_kaly_settings";
 
 // Load the roster id list from KV, seeding it on first run.
 async function roster(kv) {
@@ -48,11 +52,17 @@ export async function onRequestOptions() {
 export async function onRequestGet({ env }) {
   const kv = env.clinic_x_data;
   const ids = await roster(kv);
+  const tpl = await loadTemplate(kv);
   const out = [];
   for (const id of ids) {
     const stored = kv ? await kv.get(id, "json") : null;
     const rec = hydrate(id, stored);
-    if (rec && !rec.archived) out.push(rec);
+    if (!rec) continue;
+    // one-time clear of the old seeded stage/blockers, plus the template merge
+    // that keeps every client on the current order and wording
+    const dirty = [migrateManualFields(rec), applyTemplate(rec, tpl)].some(Boolean);
+    if (dirty && kv) await kv.put(id, JSON.stringify(rec));
+    if (!rec.archived) out.push(rec);
   }
   return json(out);
 }
@@ -74,15 +84,16 @@ export async function onRequestPost({ env, request }) {
   const base = slugify(name);
   const id = `${base}-${Date.now().toString(36)}`;
 
-  // new clients use the (possibly customized) default checklist template
-  const settings = (await kv.get(SETTINGS_KEY, "json")) || {};
-  const checklist = checklistFromTexts(settings.defaultChecklist);
+  // new clients start on the current template, in its current order
+  const checklist = checklistFromTemplate(await loadTemplate(kv));
 
   const rec = {
     id,
     name,
-    stage: body.stage || "Early Stage",
+    stage: body.stage || INITIAL_STAGE,
     blockers: [],
+    manualV: MANUAL_V,
+    syncV: SYNC_V,
     checklist,
     notes: "",
     noteEntries: [],
