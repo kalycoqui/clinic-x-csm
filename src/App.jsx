@@ -20,6 +20,19 @@ import {
   Minus,
   ChevronRight,
   ExternalLink,
+  Building2,
+  Pencil,
+  Trash2,
+  Archive,
+  CalendarPlus,
+  Folder,
+  FolderPlus,
+  Upload,
+  ZoomIn,
+  ZoomOut,
+  Save,
+  Edit3,
+  Image,
 } from "lucide-react";
 
 const STYLES = `
@@ -1368,6 +1381,380 @@ textarea {
   display: none;
 }
 
+/* ---------- client row actions + add client ---------- */
+.client-row {
+  cursor: pointer;
+}
+.client-row .pick {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  padding: 0;
+  text-align: left;
+}
+.client-row .actions {
+  display: flex;
+  gap: 2px;
+  flex: 0 0 auto;
+  opacity: 0;
+  transition: opacity 140ms ease;
+}
+.client-row:hover .actions,
+.client-row.active .actions {
+  opacity: 1;
+}
+.row-action {
+  display: grid;
+  place-items: center;
+  color: var(--faint);
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+  padding: 5px;
+  line-height: 0;
+  transition: background 140ms ease, color 140ms ease;
+}
+.row-action:hover {
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--ink);
+}
+.row-action.danger:hover {
+  background: var(--pink);
+  color: var(--pink-ink);
+}
+.rename-input {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  border: 1px solid var(--lilac);
+  border-radius: 8px;
+  padding: 4px 8px;
+  background: #fff;
+  outline: none;
+}
+.add-client {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--violet-ink);
+  background: var(--violet);
+  border: 1px dashed rgba(107, 76, 138, 0.4);
+  border-radius: var(--radius);
+  padding: 11px 12px;
+  justify-content: center;
+  transition: box-shadow 140ms ease;
+}
+.add-client:hover {
+  box-shadow: var(--shadow-hover);
+}
+.add-client-form {
+  margin-top: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.add-client-form input,
+.add-client-form select,
+.field select,
+.field input,
+.field textarea {
+  width: 100%;
+  font-size: 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 11px;
+  background: var(--bg-soft);
+  outline: none;
+}
+.add-client-form input:focus,
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--lilac);
+  box-shadow: var(--shadow-hover);
+}
+.add-client-form .row {
+  display: flex;
+  gap: 8px;
+}
+
+/* ---------- meetings ---------- */
+.meeting-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.field label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.field-row {
+  display: flex;
+  gap: 12px;
+}
+.field-row .field {
+  flex: 1;
+}
+.meeting-card {
+  padding: 0;
+  overflow: hidden;
+}
+.meeting-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+}
+.meeting-head .who {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  text-align: left;
+  display: block;
+}
+.meeting-head .name {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.meeting-head .when {
+  display: block;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.meeting-actions {
+  display: flex;
+  gap: 4px;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+}
+.gcal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mint-ink);
+  background: var(--mint);
+  border: 1px solid rgba(14, 124, 102, 0.22);
+  border-radius: 9px;
+  padding: 6px 10px;
+  white-space: nowrap;
+}
+.gcal-btn:hover {
+  box-shadow: var(--shadow-hover);
+}
+.meeting-body {
+  padding: 0 16px 16px;
+  border-top: 1px solid var(--line-soft);
+}
+.meeting-body .notes-area {
+  margin-top: 12px;
+}
+
+/* ---------- notes entry header (title edit + delete) ---------- */
+.entry-actions {
+  display: flex;
+  gap: 2px;
+  flex: 0 0 auto;
+}
+
+/* ---------- documents: folders + upload + tiles ---------- */
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 22px;
+  margin-bottom: 16px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+  background: var(--bg-soft);
+  border: 1.5px dashed #e3bfd4;
+  border-radius: var(--radius);
+  transition: background 140ms ease, border-color 140ms ease;
+}
+.dropzone.drag {
+  background: var(--violet);
+  border-color: var(--lilac);
+  color: var(--violet-ink);
+}
+.dropzone .pick-link {
+  color: var(--teal-dark);
+  font-weight: 600;
+  text-decoration: underline;
+}
+.folder-group {
+  margin-bottom: 18px;
+}
+.folder-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 4px 10px;
+  color: var(--muted);
+}
+.folder-head .folder-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.folder-head .spacer {
+  flex: 1;
+}
+.doc-actions {
+  display: flex;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+.doc-folder-select {
+  font-size: 11.5px;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 3px 6px;
+  background: var(--bg-soft);
+}
+
+/* ---------- document preview ---------- */
+.preview-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+  background: var(--bg-soft);
+}
+.preview-toolbar .zoom-label {
+  font-size: 12px;
+  color: var(--muted);
+  min-width: 52px;
+}
+.preview-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 20px;
+  display: grid;
+  place-items: start center;
+  background: #fbf3f8;
+}
+.preview-img {
+  transform-origin: top center;
+  border-radius: 8px;
+  box-shadow: 0 6px 24px rgba(122, 61, 95, 0.16);
+}
+.preview-pdf {
+  width: 100%;
+  height: 72vh;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+/* ---------- settings ---------- */
+.setting-card {
+  padding: 18px;
+}
+.setting-card h3 {
+  margin: 0 0 4px;
+  font-size: 15px;
+}
+.setting-card .desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--ink);
+  background: transparent;
+  border: none;
+}
+.toggle .track {
+  width: 42px;
+  height: 24px;
+  border-radius: 999px;
+  background: #e6cfe0;
+  position: relative;
+  transition: background 160ms ease;
+}
+.toggle .track::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 160ms ease;
+}
+.toggle.on .track {
+  background: var(--teal);
+}
+.toggle.on .track::after {
+  transform: translateX(18px);
+}
+.template-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.template-row .num {
+  font-size: 12px;
+  color: var(--faint);
+  width: 20px;
+  flex: 0 0 auto;
+  text-align: right;
+}
+.template-row input {
+  flex: 1;
+  font-size: 13.5px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 8px 10px;
+  background: var(--bg-soft);
+  outline: none;
+}
+.template-row input:focus {
+  border-color: var(--lilac);
+}
+
 `;
 
 // The design ships with the component: styles are injected at mount, so no
@@ -1511,40 +1898,70 @@ const GoldStar = ({ size = 20 }) => (
   </svg>
 );
 
-// Stage progress ring with a clinic cross at its center.
-const ClinicRing = ({ stage, active }) => {
+// Building tile tinted to the client's current stage.
+const ClientTile = ({ stage }) => {
   const def = stageDef(stage);
-  const circ = 2 * Math.PI * 6.5;
-  const pct = (STAGES.indexOf(def) + 1) / STAGES.length;
   return (
-    <svg className="stage-ring" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
-      <circle cx="9" cy="9" r="6.5" fill="none" stroke="#F7E7EF" strokeWidth="1.25" />
-      <circle
-        cx="9"
-        cy="9"
-        r="6.5"
-        fill="none"
-        stroke={def.ring}
-        strokeWidth="1.25"
-        strokeLinecap="round"
-        strokeDasharray={`${(circ * pct).toFixed(1)} ${circ.toFixed(1)}`}
-        transform="rotate(-90 9 9)"
-      />
-      <path
-        d="M9 6.4v5.2M6.4 9h5.2"
-        stroke={active ? def.ring : "#EBD2DF"}
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
-    </svg>
+    <span className="doc-tile" style={{ background: def.bg, color: def.color }}>
+      <Building2 size={16} />
+    </span>
   );
 };
+
+const newId = (p) => `${p}-${Date.now().toString(36)}-${Math.round(performance.now())}`;
+
+// Read a File into a base64 data URL (for KV-stored images / PDFs).
+function fileToDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+}
+
+// Build a Google Calendar "add event" URL from a meeting (date + time, +1h).
+function gcalUrl(m) {
+  const text = encodeURIComponent(m.title || "Meeting");
+  const details = encodeURIComponent(m.notes || "");
+  if (!m.date) {
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&details=${details}`;
+  }
+  const start = new Date(`${m.date}T${m.time || "09:00"}`);
+  const end = new Date(start.getTime() + 60 * 60 * 1000);
+  const fmt = (d) =>
+    d.getFullYear().toString() +
+    String(d.getMonth() + 1).padStart(2, "0") +
+    String(d.getDate()).padStart(2, "0") +
+    "T" +
+    String(d.getHours()).padStart(2, "0") +
+    String(d.getMinutes()).padStart(2, "0") +
+    "00";
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&details=${details}&dates=${fmt(
+    start
+  )}/${fmt(end)}`;
+}
+
+const MEETING_TEMPLATE = `Attendees:
+
+Small talk / personal detail:
+
+Agenda covered:
+
+Decisions made:
+
+Promises (each with due date/time):
+
+Client homework before next call:
+
+Next meeting scheduled for:`;
 
 export default function App() {
   useDesignStyles();
 
   const [clients, setClients] = useState([]);
-  const [personal, setPersonal] = useState({ notes: "", docs: [] });
+  const [personal, setPersonal] = useState({ notes: "", noteEntries: [], docs: [], folders: [] });
+  const [settings, setSettings] = useState({ defaultChecklist: [], chatContext: true });
   const [activeId, setActiveId] = useState(null);
   const [tab, setTab] = useState("checklist");
   const [view, setView] = useState("client"); // client | personal-notes | personal-docs | settings
@@ -1563,13 +1980,25 @@ export default function App() {
         return r.json();
       }),
       fetch(`${API}/api/personal`)
-        .then((r) => (r.ok ? r.json() : { notes: "", docs: [] }))
-        .catch(() => ({ notes: "", docs: [] })),
+        .then((r) => (r.ok ? r.json() : {}))
+        .catch(() => ({})),
+      fetch(`${API}/api/settings`)
+        .then((r) => (r.ok ? r.json() : {}))
+        .catch(() => ({})),
     ])
-      .then(([roster, mine]) => {
+      .then(([roster, mine, sett]) => {
         setClients(roster);
         setActiveId(roster[0]?.id ?? null);
-        setPersonal({ notes: mine.notes || "", docs: mine.docs || [] });
+        setPersonal({
+          notes: mine.notes || "",
+          noteEntries: mine.noteEntries || [],
+          docs: mine.docs || [],
+          folders: mine.folders || [],
+        });
+        setSettings({
+          defaultChecklist: sett.defaultChecklist || [],
+          chatContext: sett.chatContext !== false,
+        });
         setLoading(false);
       })
       .catch((e) => {
@@ -1604,6 +2033,52 @@ export default function App() {
     } catch (e) {
       console.error("personal save failed", e);
     }
+  }
+
+  async function saveSettings(patch) {
+    setSettings((prev) => ({ ...prev, ...patch }));
+    try {
+      await fetch(`${API}/api/settings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(patch),
+      });
+    } catch (e) {
+      console.error("settings save failed", e);
+    }
+  }
+
+  // --- client roster management -------------------------------------------
+  async function addClient(name, stage) {
+    try {
+      const res = await fetch(`${API}/api/clients`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, stage }),
+      });
+      if (!res.ok) throw new Error(`add client ${res.status}`);
+      const rec = await res.json();
+      setClients((prev) => [...prev, rec]);
+      setActiveId(rec.id);
+      setView("client");
+    } catch (e) {
+      console.error("add client failed", e);
+    }
+  }
+
+  // rename keeps the same stable id — KV data (checklist/notes/meetings) survives
+  function renameClient(id, name) {
+    saveClient(id, { name });
+  }
+
+  // archive hides from the list but retains all data in KV
+  function archiveClient(id) {
+    setClients((prev) => {
+      const next = prev.filter((c) => c.id !== id);
+      setActiveId((cur) => (cur === id ? next[0]?.id ?? null : cur));
+      return next;
+    });
+    saveClient(id, { archived: true });
   }
 
   // --- document tabs -------------------------------------------------------
@@ -1729,6 +2204,9 @@ export default function App() {
               setSidebarOpen(false);
             }}
             onPickKaly={pickKaly}
+            onAddClient={addClient}
+            onRename={renameClient}
+            onArchive={archiveClient}
           />
         )}
 
@@ -1804,13 +2282,19 @@ export default function App() {
               view={view}
               personal={personal}
               savePersonal={savePersonal}
+              settings={settings}
+              saveSettings={saveSettings}
               onOpenDoc={openDoc}
             />
           )}
         </main>
 
         {!docMode && chatOpen && (
-          <ChatPanel client={active} onClose={() => setChatOpen(false)} />
+          <ChatPanel
+            client={active}
+            chatContext={settings.chatContext}
+            onClose={() => setChatOpen(false)}
+          />
         )}
       </div>
 
@@ -1854,13 +2338,37 @@ export default function App() {
   );
 }
 
-function Sidebar({ clients, activeId, view, open, onPickClient, onPickKaly }) {
+function Sidebar({ clients, activeId, view, open, onPickClient, onPickKaly, onAddClient, onRename, onArchive }) {
+  const [editing, setEditing] = useState(null); // client id being renamed
+  const [draftName, setDraftName] = useState("");
+  const [adding, setAdding] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newStage, setNewStage] = useState("Early Stage");
+
+  function startRename(c) {
+    setEditing(c.id);
+    setDraftName(c.name);
+  }
+  function commitRename(id) {
+    const n = draftName.trim();
+    if (n) onRename(id, n);
+    setEditing(null);
+  }
+  function submitNew() {
+    const n = newName.trim();
+    if (!n) return;
+    onAddClient(n, newStage);
+    setNewName("");
+    setNewStage("Early Stage");
+    setAdding(false);
+  }
+
   return (
     <aside className={`sidebar ${open ? "open" : ""}`}>
       <div className="kaly-block">
         <div className="head">
           <User size={16} />
-          Kaly’s Dashboard
+          Kaly’s Space
         </div>
         <div className="kaly-grid">
           {KALY_NAV.map((n) => {
@@ -1884,25 +2392,94 @@ function Sidebar({ clients, activeId, view, open, onPickClient, onPickKaly }) {
         {clients.map((c) => {
           const def = stageDef(c.stage);
           const isActive = view === "client" && c.id === activeId;
+          const isEditing = editing === c.id;
           return (
-            <button
-              key={c.id}
-              className={`client-row ${isActive ? "active" : ""}`}
-              onClick={() => onPickClient(c.id)}
-            >
-              <ClinicRing stage={c.stage} active={isActive} />
-              <span className="who">
-                <span className="name">{c.name}</span>
-                <span className="pill" style={{ background: def.bg, color: def.color }}>
-                  {def.name}
-                </span>
-              </span>
-              {(c.blockers?.length ?? 0) > 0 && (
-                <span className="blocker-count">{c.blockers.length}</span>
+            <div key={c.id} className={`client-row ${isActive ? "active" : ""}`}>
+              {isEditing ? (
+                <>
+                  <ClientTile stage={c.stage} />
+                  <input
+                    autoFocus
+                    className="rename-input"
+                    value={draftName}
+                    onChange={(e) => setDraftName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") commitRename(c.id);
+                      if (e.key === "Escape") setEditing(null);
+                    }}
+                    onBlur={() => commitRename(c.id)}
+                  />
+                </>
+              ) : (
+                <>
+                  <button className="pick" onClick={() => onPickClient(c.id)}>
+                    <ClientTile stage={c.stage} />
+                    <span className="who">
+                      <span className="name">{c.name}</span>
+                      <span className="pill" style={{ background: def.bg, color: def.color }}>
+                        {def.name}
+                      </span>
+                    </span>
+                    {(c.blockers?.length ?? 0) > 0 && (
+                      <span className="blocker-count">{c.blockers.length}</span>
+                    )}
+                  </button>
+                  <span className="actions">
+                    <button
+                      className="row-action"
+                      title="Rename"
+                      onClick={() => startRename(c)}
+                    >
+                      <Pencil size={13} />
+                    </button>
+                    <button
+                      className="row-action danger"
+                      title="Archive (data kept)"
+                      onClick={() => {
+                        if (window.confirm(`Archive ${c.name}? Its data is kept in KV and it just hides from the list.`))
+                          onArchive(c.id);
+                      }}
+                    >
+                      <Archive size={13} />
+                    </button>
+                  </span>
+                </>
               )}
-            </button>
+            </div>
           );
         })}
+
+        {adding ? (
+          <div className="add-client-form">
+            <input
+              autoFocus
+              placeholder="Client name…"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && submitNew()}
+            />
+            <select value={newStage} onChange={(e) => setNewStage(e.target.value)}>
+              {STAGES.map((s) => (
+                <option key={s.name} value={s.name}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+            <div className="row">
+              <button className="btn" style={{ flex: 1 }} onClick={submitNew}>
+                Add
+              </button>
+              <button className="btn ghost" onClick={() => setAdding(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button className="add-client" onClick={() => setAdding(true)}>
+            <Plus size={15} />
+            Add Client
+          </button>
+        )}
       </div>
     </aside>
   );
@@ -2014,33 +2591,44 @@ function Checklist({ client, saveClient }) {
   );
 }
 
-// Notes are accordion sections: the legacy `notes` string stays as the first
-// editable section, extra dated notes live in `noteEntries`.
+// Client notes tab — thin wrapper over the shared NotesEditor.
 function Notes({ client, saveClient }) {
-  const entries = client.noteEntries || [];
-  const [text, setText] = useState(client.notes || "");
+  return (
+    <NotesEditor
+      subject={client.name}
+      notes={client.notes || ""}
+      entries={client.noteEntries || []}
+      onSaveNotes={(notes) => saveClient(client.id, { notes })}
+      onSaveEntries={(noteEntries) => saveClient(client.id, { noteEntries })}
+    />
+  );
+}
+
+// Shared notes CRUD: a "Working notes" section (legacy `notes` string) plus a
+// list of titled entries — each with editable title, editable body (save on
+// blur), and delete-with-confirm.
+function NotesEditor({ subject, notes, entries, onSaveNotes, onSaveEntries }) {
+  const [text, setText] = useState(notes);
   const [open, setOpen] = useState({ working: true });
   const [adding, setAdding] = useState(false);
   const [title, setTitle] = useState("");
 
-  useEffect(() => {
-    setText(client.notes || "");
-  }, [client.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => setText(notes), [subject]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function addNote() {
     const t = title.trim();
     if (!t) return;
-    const entry = { id: `n-${Date.now()}`, title: t, body: "", at: new Date().toISOString() };
-    saveClient(client.id, { noteEntries: [entry, ...entries] });
+    const entry = { id: newId("n"), title: t, body: "", at: new Date().toISOString() };
+    onSaveEntries([entry, ...entries]);
     setOpen((o) => ({ ...o, [entry.id]: true }));
     setTitle("");
     setAdding(false);
   }
-
-  function saveEntry(id, body) {
-    saveClient(client.id, {
-      noteEntries: entries.map((e) => (e.id === id ? { ...e, body } : e)),
-    });
+  function patchEntry(id, patch) {
+    onSaveEntries(entries.map((e) => (e.id === id ? { ...e, ...patch } : e)));
+  }
+  function removeEntry(id) {
+    onSaveEntries(entries.filter((e) => e.id !== id));
   }
 
   return (
@@ -2072,15 +2660,15 @@ function Notes({ client, saveClient }) {
 
       <div className="stack">
         {entries.map((e) => (
-          <Accordion
+          <NoteEntry
             key={e.id}
-            title={e.title}
-            meta={new Date(e.at).toLocaleDateString()}
+            entry={e}
             open={!!open[e.id]}
             onToggle={() => setOpen((o) => ({ ...o, [e.id]: !o[e.id] }))}
-          >
-            <NoteBody value={e.body} onSave={(body) => saveEntry(e.id, body)} />
-          </Accordion>
+            onSaveTitle={(t) => patchEntry(e.id, { title: t })}
+            onSaveBody={(body) => patchEntry(e.id, { body })}
+            onDelete={() => removeEntry(e.id)}
+          />
         ))}
 
         <Accordion
@@ -2092,11 +2680,9 @@ function Notes({ client, saveClient }) {
           <textarea
             className="notes-area"
             value={text}
-            placeholder={`Notes for ${client.name}…`}
+            placeholder={`Notes for ${subject}…`}
             onChange={(e) => setText(e.target.value)}
-            onBlur={() => {
-              if (text !== (client.notes || "")) saveClient(client.id, { notes: text });
-            }}
+            onBlur={() => text !== notes && onSaveNotes(text)}
           />
         </Accordion>
       </div>
@@ -2104,17 +2690,79 @@ function Notes({ client, saveClient }) {
   );
 }
 
-function NoteBody({ value, onSave }) {
-  const [body, setBody] = useState(value || "");
+function NoteEntry({ entry, open, onToggle, onSaveTitle, onSaveBody, onDelete }) {
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [draftTitle, setDraftTitle] = useState(entry.title);
+  const [body, setBody] = useState(entry.body || "");
+
+  useEffect(() => setBody(entry.body || ""), [entry.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function commitTitle() {
+    const t = draftTitle.trim();
+    if (t && t !== entry.title) onSaveTitle(t);
+    setEditingTitle(false);
+  }
+
   return (
-    <textarea
-      className="notes-area"
-      style={{ minHeight: 140 }}
-      value={body}
-      placeholder="What happened, what’s next…"
-      onChange={(e) => setBody(e.target.value)}
-      onBlur={() => body !== value && onSave(body)}
-    />
+    <section className={`card acc ${open ? "open" : ""}`}>
+      <div className="acc-head">
+        <button
+          className="row-action"
+          onClick={onToggle}
+          aria-expanded={open}
+          style={{ padding: 0 }}
+        >
+          <ChevronRight className="chev" size={12} />
+        </button>
+        {editingTitle ? (
+          <input
+            autoFocus
+            className="rename-input"
+            style={{ flex: 1 }}
+            value={draftTitle}
+            onChange={(e) => setDraftTitle(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") commitTitle();
+              if (e.key === "Escape") setEditingTitle(false);
+            }}
+            onBlur={commitTitle}
+          />
+        ) : (
+          <button
+            className="acc-title"
+            style={{ background: "transparent", border: "none", textAlign: "left" }}
+            onClick={onToggle}
+          >
+            {entry.title}
+          </button>
+        )}
+        <span className="acc-meta">{new Date(entry.at).toLocaleDateString()}</span>
+        <span className="entry-actions">
+          <button className="row-action" title="Rename" onClick={() => { setDraftTitle(entry.title); setEditingTitle(true); }}>
+            <Pencil size={13} />
+          </button>
+          <button
+            className="row-action danger"
+            title="Delete"
+            onClick={() => window.confirm(`Delete note “${entry.title}”?`) && onDelete()}
+          >
+            <Trash2 size={13} />
+          </button>
+        </span>
+      </div>
+      {open && (
+        <div className="acc-body">
+          <textarea
+            className="notes-area"
+            style={{ minHeight: 140 }}
+            value={body}
+            placeholder="What happened, what’s next…"
+            onChange={(e) => setBody(e.target.value)}
+            onBlur={() => body !== (entry.body || "") && onSaveBody(body)}
+          />
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -2131,27 +2779,46 @@ function Accordion({ title, meta, open, onToggle, children }) {
   );
 }
 
+const meetingSortKey = (m) => (m.date ? `${m.date}T${m.time || "00:00"}` : m.at || "");
+
 function Meetings({ client, saveClient }) {
-  const list = client.meetings || [];
+  const list = [...(client.meetings || [])].sort((a, b) =>
+    meetingSortKey(b).localeCompare(meetingSortKey(a))
+  );
   const [adding, setAdding] = useState(false);
-  const [title, setTitle] = useState("");
+  const [form, setForm] = useState({ title: "", date: "", time: "", notes: MEETING_TEMPLATE });
+
+  function save(next) {
+    saveClient(client.id, { meetings: next });
+  }
 
   function add() {
-    const t = title.trim();
+    const t = form.title.trim();
     if (!t) return;
-    saveClient(client.id, {
-      meetings: [{ id: `m-${Date.now()}`, title: t, at: new Date().toISOString() }, ...list],
-    });
-    setTitle("");
+    const m = {
+      id: newId("m"),
+      title: t,
+      date: form.date,
+      time: form.time,
+      notes: form.notes,
+      at: new Date().toISOString(),
+    };
+    save([m, ...(client.meetings || [])]);
+    setForm({ title: "", date: "", time: "", notes: MEETING_TEMPLATE });
     setAdding(false);
+  }
+
+  function update(id, patch) {
+    save((client.meetings || []).map((m) => (m.id === id ? { ...m, ...patch } : m)));
+  }
+  function remove(id) {
+    save((client.meetings || []).filter((m) => m.id !== id));
   }
 
   return (
     <div className="fade-in">
       <div className="action-row">
-        <span className="hint">
-          Fathom sync is connected — manual entries appear alongside recorded calls
-        </span>
+        <span className="hint">Meetings, decisions, and promises — saved to KV.</span>
         <button className="add-btn pink" onClick={() => setAdding((v) => !v)}>
           <Plus size={13} />
           Add Meeting
@@ -2159,36 +2826,60 @@ function Meetings({ client, saveClient }) {
       </div>
 
       {adding && (
-        <div className="inline-form">
-          <input
-            autoFocus
-            value={title}
-            placeholder="Meeting title…"
-            onChange={(e) => setTitle(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && add()}
-          />
-          <button className="btn" onClick={add}>
-            Add
-          </button>
-        </div>
+        <section className="card meeting-form">
+          <div className="field">
+            <label>Title</label>
+            <input
+              autoFocus
+              value={form.title}
+              placeholder="e.g. Weekly sync — website review"
+              onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+            />
+          </div>
+          <div className="field-row">
+            <div className="field">
+              <label>Date</label>
+              <input
+                type="date"
+                value={form.date}
+                onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
+              />
+            </div>
+            <div className="field">
+              <label>Time</label>
+              <input
+                type="time"
+                value={form.time}
+                onChange={(e) => setForm((f) => ({ ...f, time: e.target.value }))}
+              />
+            </div>
+          </div>
+          <div className="field">
+            <label>Notes</label>
+            <textarea
+              className="notes-area"
+              style={{ minHeight: 200 }}
+              value={form.notes}
+              onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+            />
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button className="btn" onClick={add}>
+              Save meeting
+            </button>
+            <button className="btn ghost" onClick={() => setAdding(false)}>
+              Cancel
+            </button>
+          </div>
+        </section>
       )}
 
       {list.length === 0 ? (
-        <div className="empty">
-          No meetings logged yet for {client.name}. Sync from Fathom or add manually.
-        </div>
+        <div className="empty">No meetings logged yet for {client.name}.</div>
       ) : (
         <div className="stack">
           {list.map((m) => (
-            <div className="card doc-row" key={m.id}>
-              <span className="doc-tile" style={{ background: "#F8D7E8", color: "#96496C" }}>
-                <CalendarDays size={15} />
-              </span>
-              <span className="who">
-                <span className="name">{m.title}</span>
-                <span className="meta">{new Date(m.at).toLocaleString()}</span>
-              </span>
-            </div>
+            <MeetingCard key={m.id} meeting={m} onUpdate={update} onRemove={remove} />
           ))}
         </div>
       )}
@@ -2196,46 +2887,271 @@ function Meetings({ client, saveClient }) {
   );
 }
 
+function MeetingCard({ meeting: m, onUpdate, onRemove }) {
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(m);
+
+  useEffect(() => setDraft(m), [m.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const when = m.date
+    ? new Date(`${m.date}T${m.time || "00:00"}`).toLocaleString(undefined, {
+        dateStyle: "medium",
+        ...(m.time ? { timeStyle: "short" } : {}),
+      })
+    : `Added ${new Date(m.at).toLocaleDateString()}`;
+
+  function saveEdit() {
+    onUpdate(m.id, {
+      title: draft.title.trim() || m.title,
+      date: draft.date,
+      time: draft.time,
+      notes: draft.notes,
+    });
+    setEditing(false);
+    setOpen(true);
+  }
+
+  return (
+    <section className="card meeting-card">
+      <div className="meeting-head">
+        <span className="doc-tile" style={{ background: "#F8D7E8", color: "#96496C" }}>
+          <CalendarDays size={16} />
+        </span>
+        <button className="who" onClick={() => setOpen((v) => !v)}>
+          <span className="name">{m.title}</span>
+          <span className="when">{when}</span>
+        </button>
+        <div className="meeting-actions">
+          <a className="gcal-btn" href={gcalUrl(m)} target="_blank" rel="noopener noreferrer">
+            <CalendarPlus size={13} />
+            Google Calendar
+          </a>
+          <button className="row-action" title="Edit" onClick={() => { setEditing(true); setOpen(true); }}>
+            <Edit3 size={14} />
+          </button>
+          <button
+            className="row-action danger"
+            title="Delete"
+            onClick={() => window.confirm(`Delete meeting “${m.title}”?`) && onRemove(m.id)}
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
+      </div>
+
+      {open && (
+        <div className="meeting-body">
+          {editing ? (
+            <>
+              <div className="field-row" style={{ marginTop: 12 }}>
+                <div className="field">
+                  <label>Title</label>
+                  <input
+                    value={draft.title}
+                    onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))}
+                  />
+                </div>
+              </div>
+              <div className="field-row">
+                <div className="field">
+                  <label>Date</label>
+                  <input
+                    type="date"
+                    value={draft.date || ""}
+                    onChange={(e) => setDraft((d) => ({ ...d, date: e.target.value }))}
+                  />
+                </div>
+                <div className="field">
+                  <label>Time</label>
+                  <input
+                    type="time"
+                    value={draft.time || ""}
+                    onChange={(e) => setDraft((d) => ({ ...d, time: e.target.value }))}
+                  />
+                </div>
+              </div>
+              <textarea
+                className="notes-area"
+                value={draft.notes || ""}
+                onChange={(e) => setDraft((d) => ({ ...d, notes: e.target.value }))}
+              />
+              <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                <button className="btn" onClick={saveEdit}>
+                  <Save size={14} style={{ verticalAlign: "-2px", marginRight: 6 }} />
+                  Save
+                </button>
+                <button className="btn ghost" onClick={() => { setEditing(false); setDraft(m); }}>
+                  Cancel
+                </button>
+              </div>
+            </>
+          ) : (
+            <textarea
+              className="notes-area"
+              value={m.notes || ""}
+              placeholder="Meeting notes…"
+              onChange={() => {}}
+              onFocus={() => setEditing(true)}
+              readOnly
+            />
+          )}
+        </div>
+      )}
+    </section>
+  );
+}
+
+// Client documents tab.
 function Documents({ client, saveClient, onOpenDoc }) {
-  const list = client.documents || [];
-  const [adding, setAdding] = useState(false);
+  return (
+    <DocsManager
+      docs={client.documents || []}
+      folders={client.folders || []}
+      linkKind="DOC"
+      owner={client.name}
+      scopeLabel={`Client file · ${client.name}`}
+      accentClass="peach"
+      onSaveDocs={(documents) => saveClient(client.id, { documents })}
+      onSaveFolders={(folders) => saveClient(client.id, { folders })}
+      onOpenDoc={onOpenDoc}
+    />
+  );
+}
+
+const MAX_UPLOAD = 2 * 1024 * 1024; // 2MB
+const fmtBytes = (n) => (n < 1024 ? `${n} B` : n < 1048576 ? `${(n / 1024).toFixed(0)} KB` : `${(n / 1048576).toFixed(1)} MB`);
+const fileKind = (mime) => (mime?.startsWith("image/") ? "IMG" : mime === "application/pdf" ? "PDF" : "FILE");
+
+// Shared documents manager: drag/drop + file-picker upload (base64 in KV, ≤2MB),
+// external links, named folders, rename + delete on docs and folders.
+function DocsManager({ docs, folders, linkKind, owner, scopeLabel, accentClass, onSaveDocs, onSaveFolders, onOpenDoc }) {
+  const [addingLink, setAddingLink] = useState(false);
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
+  const [drag, setDrag] = useState(false);
+  const fileRef = useRef(null);
 
-  function add() {
+  async function ingestFiles(files) {
+    const additions = [];
+    for (const file of Array.from(files)) {
+      if (file.size > MAX_UPLOAD) {
+        window.alert(`“${file.name}” is ${fmtBytes(file.size)} — over 2MB. Add it as a link instead.`);
+        continue;
+      }
+      const fileData = await fileToDataURL(file);
+      additions.push({
+        id: newId("d"),
+        kind: fileKind(file.type),
+        name: file.name,
+        short: shortName(file.name),
+        typeLabel: file.type || "File",
+        owner,
+        source: "Uploaded",
+        mime: file.type,
+        size: file.size,
+        fileData,
+        folderId: null,
+        updated: new Date().toISOString(),
+        scope: scopeLabel,
+      });
+    }
+    if (additions.length) onSaveDocs([...docs, ...additions]);
+  }
+
+  function addLink() {
     const n = name.trim();
     if (!n) return;
-    const doc = {
-      id: `d-${Date.now()}`,
-      kind: "DOC",
-      name: n,
-      short: shortName(n),
-      typeLabel: "Client document",
-      owner: client.name,
-      source: sourceFromUrl(url),
-      url: url.trim(),
-      updated: new Date().toISOString(),
-      scope: `Client file · ${client.name}`,
-    };
-    saveClient(client.id, { documents: [...list, doc] });
+    onSaveDocs([
+      ...docs,
+      {
+        id: newId("d"),
+        kind: linkKind,
+        name: n,
+        short: shortName(n),
+        typeLabel: "External link",
+        owner,
+        source: sourceFromUrl(url),
+        url: url.trim(),
+        folderId: null,
+        updated: new Date().toISOString(),
+        scope: scopeLabel,
+      },
+    ]);
     setName("");
     setUrl("");
-    setAdding(false);
+    setAddingLink(false);
   }
+
+  function patchDoc(id, patch) {
+    onSaveDocs(docs.map((d) => (d.id === id ? { ...d, ...patch } : d)));
+  }
+  function removeDoc(id) {
+    onSaveDocs(docs.filter((d) => d.id !== id));
+  }
+  function renameDoc(d) {
+    const n = window.prompt("Rename document", d.name);
+    if (n && n.trim()) patchDoc(d.id, { name: n.trim(), short: shortName(n.trim()) });
+  }
+
+  function addFolder() {
+    const n = window.prompt("New folder name");
+    if (n && n.trim()) onSaveFolders([...folders, { id: newId("f"), name: n.trim() }]);
+  }
+  function renameFolder(f) {
+    const n = window.prompt("Rename folder", f.name);
+    if (n && n.trim()) onSaveFolders(folders.map((x) => (x.id === f.id ? { ...x, name: n.trim() } : x)));
+  }
+  function deleteFolder(f) {
+    if (!window.confirm(`Delete folder “${f.name}”? Its documents move to General.`)) return;
+    onSaveFolders(folders.filter((x) => x.id !== f.id));
+    onSaveDocs(docs.map((d) => (d.folderId === f.id ? { ...d, folderId: null } : d)));
+  }
+
+  const groups = [
+    ...folders.map((f) => ({ folder: f, items: docs.filter((d) => d.folderId === f.id) })),
+    {
+      folder: null,
+      items: docs.filter((d) => !d.folderId || !folders.some((f) => f.id === d.folderId)),
+    },
+  ];
 
   return (
     <div className="fade-in">
       <div className="action-row">
-        <span className="hint">
-          Client-specific files only — your own SOPs and templates live in Reference Docs
-        </span>
-        <button className="add-btn peach" onClick={() => setAdding((v) => !v)}>
+        <span className="hint">Upload images / PDFs (≤2MB) or add external links. Organize with folders.</span>
+        <button className="add-btn mint" onClick={addFolder}>
+          <FolderPlus size={13} />
+          New Folder
+        </button>
+        <button className={`add-btn ${accentClass}`} onClick={() => setAddingLink((v) => !v)}>
           <Plus size={13} />
-          Add Document
+          Add Link
         </button>
       </div>
 
-      {adding && (
+      <div
+        className={`dropzone ${drag ? "drag" : ""}`}
+        onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
+        onDragLeave={() => setDrag(false)}
+        onDrop={(e) => { e.preventDefault(); setDrag(false); ingestFiles(e.dataTransfer.files); }}
+        onClick={() => fileRef.current?.click()}
+      >
+        <Upload size={20} />
+        <span>
+          Drag files here, or <span className="pick-link">browse</span> — images & PDFs up to 2MB
+        </span>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*,application/pdf"
+          multiple
+          hidden
+          onChange={(e) => { ingestFiles(e.target.files); e.target.value = ""; }}
+        />
+      </div>
+
+      {addingLink && (
         <div className="inline-form">
           <input
             autoFocus
@@ -2245,56 +3161,107 @@ function Documents({ client, saveClient, onOpenDoc }) {
           />
           <input
             value={url}
-            placeholder="Link (Drive, Notion, …)"
+            placeholder="Link (Drive, Notion, Sheets, …)"
             onChange={(e) => setUrl(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && add()}
+            onKeyDown={(e) => e.key === "Enter" && addLink()}
           />
-          <button className="btn" onClick={add}>
+          <button className="btn" onClick={addLink}>
             Add
           </button>
         </div>
       )}
 
-      {list.length === 0 ? (
-        <div className="empty">
-          No documents attached for {client.name}. SOPs, BAAs, and contracts will show here.
-        </div>
+      {docs.length === 0 ? (
+        <div className="empty">No documents yet. Upload a file or add a link.</div>
       ) : (
-        <DocList docs={list} onOpenDoc={onOpenDoc} />
+        groups.map(({ folder, items }) =>
+          items.length === 0 && folder === null ? null : (
+            <div className="folder-group" key={folder?.id || "general"}>
+              <div className="folder-head">
+                <Folder size={13} />
+                <span className="folder-title">{folder ? folder.name : "General"}</span>
+                <span className="spacer" />
+                {folder && (
+                  <>
+                    <button className="row-action" title="Rename folder" onClick={() => renameFolder(folder)}>
+                      <Pencil size={13} />
+                    </button>
+                    <button className="row-action danger" title="Delete folder" onClick={() => deleteFolder(folder)}>
+                      <Trash2 size={13} />
+                    </button>
+                  </>
+                )}
+              </div>
+              <div className="stack">
+                {items.length === 0 ? (
+                  <div className="empty" style={{ padding: 20 }}>Empty folder.</div>
+                ) : (
+                  items.map((d) => (
+                    <DocRow
+                      key={d.id}
+                      doc={d}
+                      folders={folders}
+                      onOpenDoc={onOpenDoc}
+                      onMove={(folderId) => patchDoc(d.id, { folderId })}
+                      onRename={() => renameDoc(d)}
+                      onDelete={() => window.confirm(`Delete “${d.name}”?`) && removeDoc(d.id)}
+                    />
+                  ))
+                )}
+              </div>
+            </div>
+          )
+        )
       )}
     </div>
   );
 }
 
-function DocList({ docs, onOpenDoc }) {
+function DocRow({ doc: d, folders, onOpenDoc, onMove, onRename, onDelete }) {
+  const tint = docTint(d);
+  const Icon = d.mime?.startsWith("image/") ? Image : FileText;
   return (
-    <div className="stack">
-      {docs.map((d) => {
-        const tint = docTint(d);
-        return (
-          <div className="card doc-row" key={d.id}>
-            <span className="doc-tile" style={{ background: tint.bg, color: tint.color }}>
-              <FileText size={15} />
-            </span>
-            <span className="who">
-              <span className="name">{d.name}</span>
-              <span className="meta">
-                {[d.kind, d.source, d.updated && `updated ${new Date(d.updated).toLocaleDateString()}`]
-                  .filter(Boolean)
-                  .join(" · ")}
-              </span>
-            </span>
-            <button className="link-btn" onClick={() => onOpenDoc(d)}>
-              Open
-            </button>
-          </div>
-        );
-      })}
+    <div className="card doc-row">
+      <span className="doc-tile" style={{ background: tint.bg, color: tint.color }}>
+        <Icon size={15} />
+      </span>
+      <span className="who">
+        <span className="name">{d.name}</span>
+        <span className="meta">
+          {[d.kind, d.source, d.size && fmtBytes(d.size), d.updated && `updated ${new Date(d.updated).toLocaleDateString()}`]
+            .filter(Boolean)
+            .join(" · ")}
+        </span>
+      </span>
+      <select
+        className="doc-folder-select"
+        value={d.folderId || ""}
+        onChange={(e) => onMove(e.target.value || null)}
+        title="Move to folder"
+      >
+        <option value="">General</option>
+        {folders.map((f) => (
+          <option key={f.id} value={f.id}>
+            {f.name}
+          </option>
+        ))}
+      </select>
+      <div className="doc-actions">
+        <button className="row-action" title="Rename" onClick={onRename}>
+          <Pencil size={14} />
+        </button>
+        <button className="row-action danger" title="Delete" onClick={onDelete}>
+          <Trash2 size={14} />
+        </button>
+        <button className="link-btn" onClick={() => onOpenDoc(d)}>
+          Open
+        </button>
+      </div>
     </div>
   );
 }
 
-function KalyPane({ view, personal, savePersonal, onOpenDoc }) {
+function KalyPane({ view, personal, savePersonal, settings, saveSettings, onOpenDoc }) {
   const titles = {
     "personal-notes": "Personal Notes",
     "personal-docs": "Reference Docs",
@@ -2306,11 +3273,11 @@ function KalyPane({ view, personal, savePersonal, onOpenDoc }) {
       <div className="pane-head" style={{ paddingBottom: 20, borderBottom: "1px solid var(--line)" }}>
         <div className="title-row">
           <User size={19} color="#8B6DAE" />
-          <h1>{titles[view] || "Kaly’s Dashboard"}</h1>
+          <h1>{titles[view] || "Kaly’s Space"}</h1>
         </div>
         <div className="sub">
           <span className="pill" style={{ background: "#F3E4F8", color: "#6B4C8A", marginTop: 0 }}>
-            Kaly’s Dashboard
+            Kaly’s Space
           </span>
           <span>Saved to KV under user_kaly_dashboard · not attached to any client</span>
         </div>
@@ -2318,144 +3285,122 @@ function KalyPane({ view, personal, savePersonal, onOpenDoc }) {
 
       <div className="tab-body">
         {view === "personal-notes" && (
-          <PersonalNotes personal={personal} savePersonal={savePersonal} />
+          <NotesEditor
+            subject="Kaly"
+            notes={personal.notes || ""}
+            entries={personal.noteEntries || []}
+            onSaveNotes={(notes) => savePersonal({ notes })}
+            onSaveEntries={(noteEntries) => savePersonal({ noteEntries })}
+          />
         )}
         {view === "personal-docs" && (
-          <PersonalDocs personal={personal} savePersonal={savePersonal} onOpenDoc={onOpenDoc} />
+          <DocsManager
+            docs={personal.docs || []}
+            folders={personal.folders || []}
+            linkKind="REF"
+            owner="Kaly"
+            scopeLabel="Reference · Kaly’s Space"
+            accentClass="violet"
+            onSaveDocs={(docs) => savePersonal({ docs })}
+            onSaveFolders={(folders) => savePersonal({ folders })}
+            onOpenDoc={onOpenDoc}
+          />
         )}
-        {view === "settings" && <SettingsPane />}
+        {view === "settings" && <SettingsPane settings={settings} saveSettings={saveSettings} />}
       </div>
     </div>
   );
 }
 
-function PersonalNotes({ personal, savePersonal }) {
-  const [text, setText] = useState(personal.notes || "");
-  return (
-    <section className="card fade-in" style={{ padding: 16 }}>
-      <div className="action-row" style={{ marginBottom: 12 }}>
-        <span className="hint" style={{ fontWeight: 600, color: "var(--ink)", fontSize: 15 }}>
-          Working notes
-        </span>
-        <span className="owner" style={{ background: "#F9E5D3", color: "#8A5528" }}>
-          saved on blur
-        </span>
-      </div>
-      <textarea
-        className="notes-area"
-        style={{ minHeight: 300 }}
-        value={text}
-        placeholder="Your own working notes — rhythms, reminders, anything not client-specific…"
-        onChange={(e) => setText(e.target.value)}
-        onBlur={() => text !== (personal.notes || "") && savePersonal({ notes: text })}
-      />
-    </section>
+function SettingsPane({ settings, saveSettings }) {
+  const [items, setItems] = useState(
+    settings.defaultChecklist && settings.defaultChecklist.length
+      ? settings.defaultChecklist
+      : []
   );
-}
+  const [dirty, setDirty] = useState(false);
 
-function PersonalDocs({ personal, savePersonal, onOpenDoc }) {
-  const docs = personal.docs || [];
-  const [adding, setAdding] = useState(false);
-  const [name, setName] = useState("");
-  const [url, setUrl] = useState("");
+  useEffect(() => {
+    setItems(settings.defaultChecklist || []);
+    setDirty(false);
+  }, [settings.defaultChecklist]);
 
-  function add() {
-    const n = name.trim();
-    if (!n) return;
-    const doc = {
-      id: `r-${Date.now()}`,
-      kind: "REF",
-      name: n,
-      short: shortName(n),
-      typeLabel: "Reference document",
-      owner: "Kaly",
-      source: sourceFromUrl(url),
-      url: url.trim(),
-      updated: new Date().toISOString(),
-      scope: "Reference · Kaly’s Dashboard",
-    };
-    savePersonal({ docs: [...docs, doc] });
-    setName("");
-    setUrl("");
-    setAdding(false);
+  function edit(i, val) {
+    setItems((prev) => prev.map((t, j) => (j === i ? val : t)));
+    setDirty(true);
+  }
+  function removeAt(i) {
+    setItems((prev) => prev.filter((_, j) => j !== i));
+    setDirty(true);
+  }
+  function addRow() {
+    setItems((prev) => [...prev, ""]);
+    setDirty(true);
+  }
+  function saveTemplate() {
+    const cleaned = items.map((t) => t.trim()).filter(Boolean);
+    saveSettings({ defaultChecklist: cleaned });
+    setItems(cleaned);
+    setDirty(false);
   }
 
   return (
-    <div className="fade-in">
-      <div className="action-row">
-        <span className="hint">
-          {docs.length} reference items · open one to pin it as a tab beside Clinic X CSM
-        </span>
-        <button className="add-btn mint" onClick={() => setAdding((v) => !v)}>
-          <Plus size={13} />
-          Add Document
+    <div className="stack fade-in">
+      <section className="card setting-card">
+        <h3>Chat context</h3>
+        <div className="desc">
+          Include the active client’s stage, blockers, and notes in each Claude chat request.
+        </div>
+        <button
+          className={`toggle ${settings.chatContext ? "on" : ""}`}
+          onClick={() => saveSettings({ chatContext: !settings.chatContext })}
+        >
+          <span className="track" />
+          {settings.chatContext ? "On — Claude sees client context" : "Off — generic assistant"}
         </button>
-      </div>
+      </section>
 
-      {adding && (
-        <div className="inline-form">
-          <input
-            autoFocus
-            value={name}
-            placeholder="Document name…"
-            onChange={(e) => setName(e.target.value)}
-          />
-          <input
-            value={url}
-            placeholder="Link (Notion, Drive, Sheets, …)"
-            onChange={(e) => setUrl(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && add()}
-          />
-          <button className="btn" onClick={add}>
-            Add
+      <section className="card setting-card">
+        <h3>Default checklist template</h3>
+        <div className="desc">
+          Applied to every new client. Editing this doesn’t change existing clients.
+        </div>
+        {items.map((t, i) => (
+          <div className="template-row" key={i}>
+            <span className="num">{i + 1}</span>
+            <input value={t} onChange={(e) => edit(i, e.target.value)} placeholder="Checklist step…" />
+            <button className="row-action danger" title="Remove" onClick={() => removeAt(i)}>
+              <Trash2 size={14} />
+            </button>
+          </div>
+        ))}
+        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+          <button className="add-btn mint" onClick={addRow}>
+            <Plus size={13} />
+            Add step
+          </button>
+          <button className="btn" onClick={saveTemplate} disabled={!dirty}>
+            <Save size={14} style={{ verticalAlign: "-2px", marginRight: 6 }} />
+            Save template
           </button>
         </div>
-      )}
-
-      {docs.length === 0 ? (
-        <div className="empty">
-          No reference documents yet. Add SOPs, BAA templates, and mappings you reuse.
-        </div>
-      ) : (
-        <DocList docs={docs} onOpenDoc={onOpenDoc} />
-      )}
-    </div>
-  );
-}
-
-function SettingsPane() {
-  const rows = [
-    {
-      label: "Claude context depth",
-      hint: "How much SOP text is sent with each chat request",
-    },
-    { label: "Fathom sync", hint: "Pull meeting transcripts into the Meetings tab" },
-    { label: "Export defaults", hint: "What the printed checklist includes" },
-  ];
-  return (
-    <div className="stack fade-in">
-      {rows.map((r) => (
-        <div className="card doc-row" key={r.label}>
-          <span className="who">
-            <span className="name">{r.label}</span>
-            <span className="meta">{r.hint}</span>
-          </span>
-          <span className="owner" style={{ background: "#F9E5D3", color: "#8A5528" }}>
-            Placeholder
-          </span>
-        </div>
-      ))}
+      </section>
     </div>
   );
 }
 
 function DocPane({ doc, onMinimize, onClose }) {
   const tint = docTint(doc);
+  const isImage = doc.fileData && doc.mime?.startsWith("image/");
+  const isPdf = doc.fileData && doc.mime === "application/pdf";
+  const [zoom, setZoom] = useState(1);
+  const [fit, setFit] = useState(true);
+
   return (
     <div className="fade-in" style={{ display: "flex", flexDirection: "column", minHeight: 0, flex: 1 }}>
       <div className="doc-pane-head">
         <span className="doc-tile" style={{ background: tint.bg, color: tint.color }}>
-          <FileText size={20} />
+          {isImage ? <Image size={20} /> : <FileText size={20} />}
         </span>
         <span className="who" style={{ flex: 1, minWidth: 0 }}>
           <h1>{doc.name}</h1>
@@ -2472,33 +3417,64 @@ function DocPane({ doc, onMinimize, onClose }) {
         </button>
       </div>
 
-      <div className="tab-body">
-        <section className="card" style={{ maxWidth: 660, overflow: "hidden" }}>
-          <dl className="doc-facts">
-            <dt>Type</dt>
-            <dd>{doc.typeLabel || doc.kind}</dd>
-            <dt>Updated</dt>
-            <dd>{doc.updated ? new Date(doc.updated).toLocaleDateString() : "—"}</dd>
-            <dt>Owner</dt>
-            <dd>{doc.owner || "—"}</dd>
-            <dt>Source</dt>
-            <dd>{doc.source || "External"}</dd>
-          </dl>
-          <div className="doc-open">
-            {doc.url ? (
-              <a className="ext" href={doc.url} target="_blank" rel="noopener noreferrer">
-                <ExternalLink size={14} />
-                Open in {doc.source || "source"}
-              </a>
-            ) : (
-              <span className="note">No link on this document yet.</span>
-            )}
-            <span className="note">
-              Opens in the original app — nothing is previewed or edited here.
-            </span>
-          </div>
-        </section>
-      </div>
+      {isImage && (
+        <div className="preview-toolbar">
+          <button className="mini-btn" title="Zoom out" onClick={() => { setFit(false); setZoom((z) => Math.max(0.25, z - 0.25)); }}>
+            <ZoomOut size={14} />
+          </button>
+          <span className="zoom-label">{fit ? "Fit" : `${Math.round(zoom * 100)}%`}</span>
+          <button className="mini-btn" title="Zoom in" onClick={() => { setFit(false); setZoom((z) => Math.min(4, z + 0.25)); }}>
+            <ZoomIn size={14} />
+          </button>
+          <button className="btn ghost" onClick={() => { setFit(true); setZoom(1); }}>
+            <Maximize2 size={13} style={{ verticalAlign: "-2px", marginRight: 6 }} />
+            Fit width
+          </button>
+        </div>
+      )}
+
+      {isImage ? (
+        <div className="preview-wrap">
+          <img
+            className="preview-img"
+            src={doc.fileData}
+            alt={doc.name}
+            style={fit ? { maxWidth: "100%" } : { width: `${zoom * 100}%`, maxWidth: "none" }}
+          />
+        </div>
+      ) : isPdf ? (
+        <div className="tab-body">
+          <embed className="preview-pdf" src={doc.fileData} type="application/pdf" />
+        </div>
+      ) : (
+        <div className="tab-body">
+          <section className="card" style={{ maxWidth: 660, overflow: "hidden" }}>
+            <dl className="doc-facts">
+              <dt>Type</dt>
+              <dd>{doc.typeLabel || doc.kind}</dd>
+              <dt>Updated</dt>
+              <dd>{doc.updated ? new Date(doc.updated).toLocaleDateString() : "—"}</dd>
+              <dt>Owner</dt>
+              <dd>{doc.owner || "—"}</dd>
+              <dt>Source</dt>
+              <dd>{doc.source || "External"}</dd>
+            </dl>
+            <div className="doc-open">
+              {doc.url ? (
+                <a className="ext" href={doc.url} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink size={14} />
+                  Open in {doc.source || "source"}
+                </a>
+              ) : (
+                <span className="note">No link or file on this document yet.</span>
+              )}
+              <span className="note">
+                External links open in the original app — nothing is previewed or edited here.
+              </span>
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   );
 }
@@ -2535,7 +3511,7 @@ function StageGuide({ clients, onClose }) {
   );
 }
 
-function ChatPanel({ client, onClose }) {
+function ChatPanel({ client, chatContext, onClose }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -2554,10 +3530,19 @@ function ChatPanel({ client, onClose }) {
     setBusy(true);
 
     try {
+      // Only send client context when the setting is on.
+      const ctx = chatContext && client
+        ? {
+            name: client.name,
+            stage: stageDef(client.stage).name,
+            blockers: client.blockers,
+            notes: client.notes,
+          }
+        : null;
       const res = await fetch(`${API}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: history, client }),
+        body: JSON.stringify({ messages: history, client: ctx }),
       });
 
       if (!res.ok || !res.body) {
@@ -2617,7 +3602,11 @@ function ChatPanel({ client, onClose }) {
         <span className="who">
           <span className="title">Claude — CSM assistant</span>
           <span className="sub">
-            {client ? `Context: ${client.name} · ${stageDef(client.stage).name}` : "No client"}
+            {!chatContext
+              ? "Context off · generic assistant"
+              : client
+              ? `Context: ${client.name} · ${stageDef(client.stage).name}`
+              : "No client"}
           </span>
         </span>
         <button className="mini-btn" onClick={onClose} aria-label="Close chat">

@@ -8,6 +8,8 @@ const KEY = "user_kaly_dashboard";
 
 const DEFAULT = {
   notes: "",
+  noteEntries: [],
+  folders: [],
   docs: [
     {
       id: "sop-v4",
@@ -18,6 +20,7 @@ const DEFAULT = {
       owner: "Kaly",
       source: "Notion",
       url: "https://www.notion.so",
+      folderId: null,
       updated: null,
     },
     {
@@ -29,6 +32,31 @@ const DEFAULT = {
       owner: "Legal",
       source: "Drive",
       url: "https://drive.google.com",
+      folderId: null,
+      updated: null,
+    },
+    {
+      id: "stripe-troubleshooting",
+      kind: "REF",
+      short: "Stripe troubleshooting",
+      name: "Stripe troubleshooting playbook",
+      typeLabel: "Reference document",
+      owner: "Kaly",
+      source: "Notion",
+      url: "https://www.notion.so",
+      folderId: null,
+      updated: null,
+    },
+    {
+      id: "tagada-mapping",
+      kind: "REF",
+      short: "Tagada mapping",
+      name: "Tagada field mapping (site 2)",
+      typeLabel: "Reference document",
+      owner: "Kaly",
+      source: "Sheets",
+      url: "https://sheets.google.com",
+      folderId: null,
       updated: null,
     },
   ],

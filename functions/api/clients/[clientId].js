@@ -1,7 +1,11 @@
-// GET  /api/clients/:clientId -> fetch one client (KV over seed default)
-// POST /api/clients/:clientId -> shallow-merge body into stored record and save
+// GET  /api/clients/:clientId -> fetch one client (seed default or stored)
+// POST /api/clients/:clientId -> shallow-merge body into stored record + save
+//
+// Handles rename ({name}), archive ({archived:true}), stage/blocker/checklist/
+// notes/meetings/documents/folders updates — all merged by stable id so a
+// rename never orphans data.
 import { json, preflight } from "../../_shared/cors.js";
-import { defaultClient } from "../../_shared/seed.js";
+import { defaultClient, checklistTemplate } from "../../_shared/seed.js";
 
 export async function onRequestOptions() {
   return preflight();
@@ -9,19 +13,20 @@ export async function onRequestOptions() {
 
 export async function onRequestGet({ env, params }) {
   const id = params.clientId;
-  const seed = defaultClient(id);
-  if (!seed) return json({ error: "unknown client" }, 404);
-
   const kv = env.clinic_x_data;
   const stored = kv ? await kv.get(id, "json") : null;
-  return json(stored ? { ...seed, ...stored, id } : seed);
+  const seed = defaultClient(id);
+  if (!stored && !seed) return json({ error: "unknown client" }, 404);
+
+  const rec = stored ? (seed ? { ...seed, ...stored, id } : { ...stored, id }) : seed;
+  if (!Array.isArray(rec.checklist) || rec.checklist.length === 0) {
+    rec.checklist = checklistTemplate();
+  }
+  return json(rec);
 }
 
 export async function onRequestPost({ env, params, request }) {
   const id = params.clientId;
-  const seed = defaultClient(id);
-  if (!seed) return json({ error: "unknown client" }, 404);
-
   const kv = env.clinic_x_data;
   if (!kv) return json({ error: "KV binding 'clinic_x_data' not configured" }, 500);
 
@@ -32,11 +37,10 @@ export async function onRequestPost({ env, params, request }) {
     return json({ error: "invalid JSON body" }, 400);
   }
 
-  const current = (await kv.get(id, "json")) || seed;
-  // Shallow merge: checklist / notes / blockers / stage etc. are replaced
-  // wholesale by whatever the client sends, which is what the UI intends.
-  const merged = { ...current, ...patch, id, updatedAt: new Date().toISOString() };
+  const current = (await kv.get(id, "json")) || defaultClient(id);
+  if (!current) return json({ error: "unknown client" }, 404);
 
+  const merged = { ...current, ...patch, id, updatedAt: new Date().toISOString() };
   await kv.put(id, JSON.stringify(merged));
   return json(merged);
 }
