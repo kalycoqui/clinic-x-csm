@@ -1,0 +1,6 @@
+# Local secrets for `npm run cf:dev` (wrangler pages dev).
+# Copy this file to `.dev.vars` and fill in your key. `.dev.vars` is gitignored.
+#
+# The Anthropic key is used SERVER-SIDE only (functions/api/chat.js). It is
+# never exposed to the browser, so there is intentionally no VITE_ prefix.
+ANTHROPIC_API_KEY=sk-ant-XXXX

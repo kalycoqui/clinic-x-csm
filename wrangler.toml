@@ -1,0 +1,22 @@
+name = "clinic-x-csm"
+compatibility_date = "2026-08-28"
+pages_build_output_dir = "dist"
+
+# Optional. Wrangler uses your `wrangler login` session, but you can pin the
+# account explicitly (from dash.cloudflare.com -> right sidebar -> Account ID).
+# account_id = "<your-cloudflare-account-id>"
+
+# Workers KV binding. The Pages Functions in ./functions read/write this as
+# `env.clinic_x_data`. For LOCAL dev (`npm run cf:dev`) wrangler uses a local
+# simulated KV and the id below is ignored. For DEPLOY, replace the id with the
+# real namespace id printed by:
+#   wrangler kv namespace create clinic_x_data
+[[kv_namespaces]]
+binding = "clinic_x_data"
+id = "c6e1bb6e34aa4d64a7a27b53b20393c6"
+preview_id = "c6e1bb6e34aa4d64a7a27b53b20393c6"
+
+# Note: the Anthropic API key is NOT stored here. It is a Cloudflare secret so
+# it never lands in git or the client bundle:
+#   Local:  put it in .dev.vars      (ANTHROPIC_API_KEY=sk-ant-...)
+#   Deploy: wrangler pages secret put ANTHROPIC_API_KEY
